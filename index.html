@@ -1,89 +1,212 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>袁馨 | 个人主页</title>
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft Yahei",sans-serif;}
-        body{background:#f7f8fa;color:#333;line-height:1.7;max-width:800px;margin:0 auto;padding:40px 20px;}
-        .header{text-align:center;margin-bottom:40px;}
-        h1{font-size:32px;margin-bottom:8px;color:#222;}
-        .motto{color:#666;font-size:17px;}
-        .section{background:#fff;padding:24px;border-radius:14px;margin-bottom:20px;box-shadow:0 2px 10px #00000008;}
-        h2{font-size:20px;margin-bottom:14px;color:#34495e;border-left:4px #409eff solid;padding-left:10px;}
-        .skill-bar{margin:8px 0;}
-        .skill-name{display:flex;justify-content:space-between;font-size:15px;margin-bottom:4px;}
-        .bar-bg{width:100%;height:8px;background:#e9ecef;border-radius:4px;overflow:hidden;}
-        .bar-fill{height:100%;background:#409eff;border-radius:4px;}
-        .contact{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;}
-        .contact a{padding:7px 14px;background:#f0f6ff;border-radius:8px;text-decoration:none;color:#409eff;font-size:15px;}
-    </style>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>东知道 · 企业内外双源制度问答智能体</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="header">
-        <h1>袁馨</h1>
-        <p class="motto">上海杉达学院本科在读｜2025年入学，现居上海</p>
-        <p class="motto">心怀热爱，步履不停</p>
+
+<!-- ===================== 顶栏 ===================== -->
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">东</div>
+    <div class="brand-text">
+      <h1>东知道</h1>
+      <span>企业内外双源制度问答智能体 · LLM-Wiki 知识沉淀</span>
+    </div>
+  </div>
+  <div class="mode-badge demo" id="modeBadge"><span class="dot"></span>演示模式（内置示例数据）</div>
+</header>
+
+<!-- ===================== Tab 导航 ===================== -->
+<nav class="tabs" id="tabNav">
+  <button class="tab-btn active" data-tab="chat">💬 对话问答</button>
+  <button class="tab-btn" data-tab="upload">📄 文档上传</button>
+  <button class="tab-btn" data-tab="wiki">📚 LLM-Wiki 知识库</button>
+  <button class="tab-btn" data-tab="collect">🌐 外部信息采集</button>
+</nav>
+
+<main class="layout">
+
+  <!-- ===================== Tab1 对话问答 ===================== -->
+  <section class="page active" id="page-chat">
+    <div class="chat-toolbar">
+      <div class="scope-switch">
+        <span class="label">检索范围</span>
+        <select id="chatScope">
+          <option value="auto">🤖 自动分类（内部/外部/混合）</option>
+          <option value="internal">🔒 仅内部制度库</option>
+          <option value="external">🌐 仅外部公开库</option>
+        </select>
+      </div>
+      <button class="btn-ghost" id="clearChat">清空对话</button>
     </div>
 
-    <div class="section">
-        <h2>个人特质</h2>
-        <p>性格认真负责、乐于学习，审美较好，善于团队协作，为人温柔坚定；信奉成长源于日常踏实做事，注重把热爱落实到报告排版、活动组织等具体事务上。</p>
+    <div class="chat-stream" id="chatStream">
+      <div class="empty-state" id="chatEmpty">
+        <div class="empty-icon">👋</div>
+        <h3>您好，我是「东知道」</h3>
+        <p>我可以回答<strong>企业内部制度</strong>与<strong>外部公开政策</strong>两类问题，所有回答均附来源溯源。</p>
+        <div class="quick-questions">
+          <button class="quick-q" data-q="公司的工作时间是怎么规定的？">⏰ 公司的工作时间是怎么规定的？</button>
+          <button class="quick-q" data-q="出差住宿报销标准是多少？">🏨 出差住宿报销标准是多少？</button>
+          <button class="quick-q" data-q="年假有几天？">🌴 年假有几天？</button>
+          <button class="quick-q" data-q="弹性退休政策是什么？">📰 弹性退休政策是什么？（外部）</button>
+          <button class="quick-q" data-q="公司对USB存储设备有什么规定？">🔐 公司对USB存储设备有什么规定？</button>
+        </div>
+      </div>
     </div>
 
-    <div class="section">
-        <h2>教育背景</h2>
-        <p><strong>2025‑至今</strong>｜上海杉达学院，本科在读</p>
-        <p>对待专业学习投入，看重理论结合实践，主动参加校园与社会实践，借此锻炼沟通、执行、审美等综合能力。</p>
+    <div class="chat-input-bar">
+      <textarea id="chatInput" rows="1" placeholder="请输入制度相关问题，例如：出差住宿标准是多少？"></textarea>
+      <button class="btn-primary" id="sendBtn">发送 ➤</button>
+    </div>
+  </section>
+
+  <!-- ===================== Tab2 文档上传 ===================== -->
+  <section class="page" id="page-upload">
+    <div class="page-head">
+      <h2>内部制度文档上传</h2>
+      <p class="hint">支持 PDF / Word(docx) / TXT · 解析分块后存入 <strong>内部私有知识库</strong>（与外部公开库物理隔离，绝不外泄）</p>
     </div>
 
-    <div class="section">
-        <h2>核心技能</h2>
-        <div class="skill-bar">
-            <div class="skill-name"><span>团队协作</span><span>92%</span></div>
-            <div class="bar-bg"><div class="bar-fill" style="width:92%"></div></div>
-        </div>
-        <div class="skill-bar">
-            <div class="skill-name"><span>沟通表达</span><span>90%</span></div>
-            <div class="bar-bg"><div class="bar-fill" style="width:90%"></div></div>
-        </div>
-        <div class="skill-bar">
-            <div class="skill-name"><span>时间管理</span><span>88%</span></div>
-            <div class="bar-bg"><div class="bar-fill" style="width:88%"></div></div>
-        </div>
-        <div class="skill-bar">
-            <div class="skill-name"><span>办公软件</span><span>86%</span></div>
-            <div class="bar-bg"><div class="bar-fill" style="width:86%"></div></div>
-        </div>
-        <div class="skill-bar">
-            <div class="skill-name"><span>审美与排版</span><span>85%</span></div>
-            <div class="bar-bg"><div class="bar-fill" style="width:85%"></div></div>
-        </div>
-        <div class="skill-bar">
-            <div class="skill-name"><span>英语应用</span><span>82%</span></div>
-            <div class="bar-bg"><div class="bar-fill" style="width:82%"></div></div>
-        </div>
+    <div class="dropzone" id="dropzone">
+      <div class="dz-icon">📄</div>
+      <p><strong>点击选择</strong> 或拖拽文件到此处上传</p>
+      <p class="dz-formats">.pdf　.docx　.txt　（单文件 ≤ 20MB）</p>
+      <input type="file" id="fileInput" accept=".pdf,.docx,.doc,.txt" multiple="" hidden="">
     </div>
 
-    <div class="section">
-        <h2>校园经历</h2>
-        <ul style="padding-left:20px;">
-            <li>曾任班级班长，负责班级日常事务协调，搭建同学与老师沟通桥梁，锻炼统筹组织能力；</li>
-            <li>获评上海进博会优秀学生助理，参与大型展会志愿服务，提升临场应变、对外沟通能力；</li>
-            <li>专业课学习：系统修习专业课程，维持良好学习状态，拓展课外知识搭建个人知识体系；</li>
-            <li>学生组织与校园活动：参与活动策划落地，提升组织协调、临场应变能力；</li>
-            <li>课程实践项目：完成小组课题、课堂汇报，掌握调研、输出汇报的工作方法，提升表达自信。</li>
-        </ul>
+    <div class="panel">
+      <div class="panel-head">
+        <h3>📚 内部库文档清单</h3>
+        <span class="pill" id="docCount">3 份</span>
+      </div>
+      <table class="data-table" id="docTable">
+        <thead><tr><th>文档名称</th><th>知识分块</th><th>所属库</th><th>操作</th></tr></thead>
+        <tbody id="docTbody"><tr><td>📄 考勤与休假管理制度.pdf</td><td>9 块</td><td><span class="tag internal">🔒 内部私有库</span></td><td><button class="btn-ghost btn-plain" data-del="考勤与休假管理制度.pdf">删除</button></td></tr><tr><td>📄 差旅报销管理制度.pdf</td><td>8 块</td><td><span class="tag internal">🔒 内部私有库</span></td><td><button class="btn-ghost btn-plain" data-del="差旅报销管理制度.pdf">删除</button></td></tr><tr><td>📄 信息安全管理制度.pdf</td><td>8 块</td><td><span class="tag internal">🔒 内部私有库</span></td><td><button class="btn-ghost btn-plain" data-del="信息安全管理制度.pdf">删除</button></td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===================== Tab3 LLM-Wiki 知识库 ===================== -->
+  <section class="page" id="page-wiki">
+    <div class="page-head">
+      <h2>LLM-Wiki 知识库</h2>
+      <p class="hint">每轮问答自动沉淀知识条目 · <strong>待审核</strong>条目不参与检索，管理员确认<strong>生效</strong>后优先命中</p>
     </div>
 
-    <div class="section">
-        <h2>联系方式</h2>
-        <p>所在地：中国上海，欢迎交流沟通、建立联系</p>
-        <div class="contact">
-            <a href="#">微信</a>
-            <a href="#">邮箱</a>
-        </div>
+    <div class="stat-cards" id="wikiStats">
+      <div class="stat-card"><span class="num" id="statTotal">2</span><span class="lbl">总条目</span></div>
+      <div class="stat-card warn"><span class="num" id="statPending">0</span><span class="lbl">待审核</span></div>
+      <div class="stat-card ok"><span class="num" id="statActive">2</span><span class="lbl">已生效</span></div>
+      <div class="stat-card"><span class="num" id="statInternal">2</span><span class="lbl">内部知识</span></div>
+      <div class="stat-card"><span class="num" id="statExternal">0</span><span class="lbl">外部知识</span></div>
     </div>
-</body>
-</html>
+
+    <div class="filter-bar">
+      <div class="seg-group" id="wikiStatusFilter">
+        <button class="seg active" data-v="">全部状态</button>
+        <button class="seg" data-v="待审核">待审核</button>
+        <button class="seg" data-v="已生效">已生效</button>
+      </div>
+      <div class="seg-group" id="wikiSourceFilter">
+        <button class="seg active" data-v="">全部来源</button>
+        <button class="seg" data-v="internal">内部</button>
+        <button class="seg" data-v="external">外部</button>
+      </div>
+    </div>
+
+    <div class="wiki-list" id="wikiList"><div class="wiki-card"><div class="wiki-card-top"><h4>公司标准工作时间</h4><div class="wiki-tags"><span class="tag internal">🔒 内部</span><span class="tag active">✅ 已生效</span></div></div><div class="wiki-content">公司实行标准工时制，周一至周五工作，每日 9:00-12:00、13:30-18:00，共 7.5 小时；9:00 后到岗计迟到，月累计第 4 次起每次扣绩效 50 元。</div><div class="wiki-meta"><span>📎 来源：考勤与休假管理制度.pdf</span><span>🕒 2026-10-08 09:30:00</span></div><div class="wiki-actions"><button class="btn-ghost btn-plain" data-act="edit" data-id="wk_seed_1">✎ 编辑</button><button class="btn-ghost" data-act="delete" data-id="wk_seed_1">🗑 删除</button></div></div><div class="wiki-card"><div class="wiki-card-top"><h4>出差住宿报销限额</h4><div class="wiki-tags"><span class="tag internal">🔒 内部</span><span class="tag active">✅ 已生效</span></div></div><div class="wiki-content">住宿限额：北上广深每晚上限 600 元，省会及二线城市 450 元，其他城市 350 元；超标部分自理，会议统一安排的凭通知据实报销。</div><div class="wiki-meta"><span>📎 来源：差旅报销管理制度.pdf</span><span>🕒 2026-10-08 09:31:00</span></div><div class="wiki-actions"><button class="btn-ghost btn-plain" data-act="edit" data-id="wk_seed_2">✎ 编辑</button><button class="btn-ghost" data-act="delete" data-id="wk_seed_2">🗑 删除</button></div></div></div>
+  </section>
+
+  <!-- ===================== Tab4 外部信息采集 ===================== -->
+  <section class="page" id="page-collect">
+    <div class="page-head">
+      <h2>外部公开信息采集</h2>
+      <p class="hint">仅采集<strong>公开可访问</strong>网页 · 采集结果只入<strong>外部公开库</strong>，与内部库严格隔离</p>
+    </div>
+
+    <div class="compliance-card">
+      <strong>🛡️ 采集合规三道闸（自动执行）</strong>
+      <ul>
+        <li>① <strong>robots 协议</strong>：robots.txt 不允许抓取的站点自动跳过；</li>
+        <li>② <strong>登录墙检测</strong>：需要登录/含密码表单的页面自动跳过，不爬取私有内容；</li>
+        <li>③ <strong>正文清洗</strong>：剥离脚本/样式/导航/广告，仅保留有效正文入外部库。</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>🎯 发起采集</h3></div>
+      <div class="collect-form">
+        <div class="form-row">
+          <label>采集关键词</label>
+          <input type="text" id="collectKeywords" placeholder="例如：2026 弹性退休 政策解读">
+        </div>
+        <div class="form-row">
+          <label>最大采集页数</label>
+          <input type="number" id="collectMaxPages" value="5" min="1" max="10">
+        </div>
+        <div class="form-row">
+          <label>手动指定公开 URL（可选，演示稳态推荐）</label>
+          <textarea id="collectUrls" rows="3" placeholder="每行一个公开网页 URL；留空则按关键词自动搜索"></textarea>
+        </div>
+        <button class="btn-primary" id="collectBtn">🌐 开始采集</button>
+        <span class="collect-status" id="collectStatus"></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>📋 本次采集结果</h3><span class="pill" id="collectResultCount"></span></div>
+      <table class="data-table">
+        <thead><tr><th>网页标题</th><th>URL</th><th>状态</th><th>入库分块</th><th>说明</th></tr></thead>
+        <tbody id="collectTbody"><tr><td colspan="5" class="table-empty">尚未采集</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>🗄️ 外部公开库清单</h3><button class="btn-ghost" id="refreshExternalDocs">刷新</button></div>
+      <table class="data-table">
+        <thead><tr><th>资料名称</th><th>知识分块</th><th>所属库</th><th>类型</th></tr></thead>
+        <tbody id="externalDocsTbody"><tr><td>🌐 2026年弹性退休政策解读（示例公开页面）.html</td><td>3 块</td><td><span class="tag external">外部公开库</span></td><td>公开网络采集</td></tr><tr><td>🌐 企业数字化管理行业趋势（示例公开报告）.html</td><td>3 块</td><td><span class="tag external">外部公开库</span></td><td>公开网络采集</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<!-- ===================== Wiki 编辑弹窗 ===================== -->
+<div class="modal-mask" id="wikiModal" hidden="">
+  <div class="modal">
+    <h3 id="wikiModalTitle">编辑知识条目</h3>
+    <div class="form-row">
+      <label>知识标题</label>
+      <input type="text" id="wikiEditTitle" placeholder="知识标题">
+    </div>
+    <div class="form-row">
+      <label>知识内容</label>
+      <textarea id="wikiEditContent" rows="5" placeholder="精炼知识内容"></textarea>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="wikiEditActivate">
+      <label for="wikiEditActivate">保存后立即生效（参与问答检索）</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="wikiEditCancel">取消</button>
+      <button class="btn-primary" id="wikiEditSave">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden="">✅ 已保存</div>
+
+<script src="js/config.js"></script>
+<script src="js/mock.js"></script>
+<script src="js/app.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/upload.js"></script>
+<script src="js/wiki.js"></script>
+<script src="js/collector.js"></script>
+
+
+</body></html>
