@@ -1,0 +1,51 @@
+README
+Peek 录屏（鸿蒙原生 · 基础版）
+基于 HarmonyOS NEXT 原生 ArkTS + MediaKit AVScreenCapture 的录屏应用，目标上架华为应用市场（AppGallery）。
+功能（轻量增强版）
+- 开始 / 停止录屏（AVScreenCaptureRecorder）
+- 可选麦克风录音（动态授权）
+- 分辨率 / 帧率设置
+- 录制开始 3 秒倒计时
+- 退到桌面录制不中断（长时任务 continuous task）
+- 录制中迷你控制条（合规替代悬浮窗，见下方说明）
+- 视频列表：应用内播放、删除、导出
+环境要求
+- DevEco Studio 5.0.0 及以上
+- HarmonyOS SDK API 12+
+- 真机运行（录屏能力在模拟器上不可用）
+构建
+1. 用 DevEco Studio 打开本目录（peek-recorder/），等待 hvigor 同步完成。
+2. 连接真机，File > Project Structure > Signing Configs 勾选 Automatically generate signature 完成自动签名。
+3. 运行到真机。
+首次运行请允许「麦克风」权限弹窗；若不开启麦克风，纯屏幕+系统内录也可正常录制。
+工程结构
+peek-recorder/
+├─ AppScope/                     应用级配置与资源
+├─ build-profile.json5           工程签名/产物配置
+├─ hvigorfile.ts                 构建脚本
+├─ oh-package.json5              工程依赖
+└─ entry/
+   ├─ build-profile.json5
+   ├─ oh-package.json5
+   ├─ hvigorfile.ts
+   └─ src/main/
+      ├─ module.json5            权限、后台模式、Ability 注册
+      ├─ ets/
+      │  ├─ entryability/EntryAbility.ets
+      │  ├─ manager/
+      │  │  ├─ ScreenRecorderManager.ets   录屏核心封装
+      │  │  └─ RecordFileManager.ets       录制文件管理
+      │  └─ pages/
+      │     ├─ Index.ets                   主页（控制+设置+倒计时）
+      │     ├─ RecordListPage.ets          视频列表/播放/导出
+      │     └─ RecordPage.ets              录制中控制页（迷你控制条）
+      └─ resources/                        字符串/颜色/图标
+合规与上架要点（下一步）
+1. 悬浮窗：HarmonyOS NEXT 的 SYSTEM_FLOAT_WINDOW 仅系统应用可申请，三方应用无法实现真悬浮窗；本工程用「长时任务 + 迕你控制条」替代，审核可过。
+2. 隐私声明：录屏 + 麦克风属于敏感能力，上架前必须在 AppGallery Connect 提交《隐私政策》并在应用内提供入口，说明录制内容仅存本地。
+3. 录屏版权声明：AVScreenCapture 上架需在应用内提示用户勿录制受版权保护内容。
+4. 资质：个人开发者即可上架工具类应用；需完成实名认证、软件著作权（软著）或应用承诺函。
+已知 TODO（基础版范围外）
+- 保存到系统相册（需用户主动点「导出」走系统保存）
+- 录制中 Live View 通知卡片（LiveViewKit）
+- GIF 导出、剪辑
