@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>期末复习助手 · 期末汇报</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+<style>
+  :root {
+    --accent: #2b6cb0; --accent-soft: #ebf4ff; --muted: #6b7280; --line: #d1d5db;
+    --r-main-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+    --r-heading-font: "Microsoft YaHei", "PingFang SC", sans-serif;
+    --r-main-font-size: 30px; --r-heading-color: #1a202c; --r-link-color: var(--accent);
+  }
+  .reveal h1, .reveal h2 { text-transform: none; }
+  .reveal h2 { font-size: 1.5em; border-left: 8px solid var(--accent); padding-left: 16px; text-align: left; }
+  .reveal section { text-align: left; }
+  .reveal ul { display: block; }
+  .reveal li { margin: 0.35em 0; }
+  .reveal table { font-size: 0.75em; }
+  .reveal table.cmp { font-size: 0.6em; width: 100%; }
+  .reveal table.cmp td:first-child { white-space: nowrap; font-weight: bold; }
+  .reveal pre { font-size: 0.5em; box-shadow: none; background: #f5f5f5; border-radius: 8px; padding: 8px 12px; }
+  .muted { color: var(--muted); }
+  .small { font-size: 0.7em; }
+  .tag { display: inline-block; background: var(--accent-soft); color: var(--accent);
+         border-radius: 6px; padding: 2px 12px; font-size: 0.7em; margin-right: 8px; }
+  .cols { display: flex; gap: 32px; }
+  .cols > div { flex: 1; }
+  .card { background: #f8fafc; border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; }
+  .card h3 { margin: 0 0 8px; font-size: 0.85em; color: var(--accent); text-transform: none; }
+  .card p, .card li { font-size: 0.68em; }
+  /* 架构图：用 CSS 方框画，不依赖图片 */
+  .arch { display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 0.62em; margin-top: 30px; }
+  .box { border: 2px solid var(--accent); border-radius: 10px; padding: 12px 16px; background: #fff; text-align: center; }
+  .box b { display: block; color: var(--accent); }
+  .arrow { color: var(--accent); font-size: 1.6em; }
+  .stack { display: flex; flex-direction: column; gap: 10px; }
+  .box.mcp { border-style: dashed; }
+  /* 演示截图：点击放大 */
+  .reveal img.shot { width: 100%; max-height: 430px; object-fit: contain; object-position: top;
+                     margin: 0; border: 1px solid var(--line); border-radius: 10px; cursor: zoom-in; }
+  .cap { font-size: 0.55em; color: var(--muted); text-align: center; margin: 0 0 8px; }
+  #zoom { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center;
+          background: rgba(0, 0, 0, 0.85); cursor: zoom-out; }
+  #zoom.on { display: flex; }
+  #zoom img { max-width: 92vw; max-height: 92vh; }
+  .todo { background: #fff7e6; border: 2px dashed #f0b429; border-radius: 10px; padding: 8px 14px;
+          color: #8a5a00; font-size: 0.6em; margin-top: 16px; }
+  .cover h1 { font-size: 2.2em; text-align: left; }
+  .flow { counter-reset: step; list-style: none; padding: 0; margin: 0; }
+  .flow li { counter-increment: step; font-size: 0.72em; padding: 6px 0; }
+  .flow li::before { content: counter(step); display: inline-block; width: 1.6em; height: 1.6em; line-height: 1.6em;
+                     text-align: center; border-radius: 50%; background: var(--accent); color: #fff; margin-right: 12px; }
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+<!-- 1. 封面 -->
+<section class="cover">
+  <p><span class="tag">路径 A · 智能体应用</span><span class="tag">《开源 AI 技术实践》期末考查</span></p>
+  <h1>📚 期末复习助手</h1>
+  <p>基于自己的课程笔记：检索、问答、出复习卷</p>
+  <p class="muted small">姓名：凡亚军　学号：f25211141　2026 年 10 月</p>
+  <aside class="notes">大家好，我做的是路径 A 智能体应用：期末复习助手。它只基于自己的课程笔记来检索、回答和出复习卷。</aside>
+</section>
+
+<!-- 2. 问题与用户 -->
+<section>
+  <h2>问题与用户</h2>
+  <div class="cols">
+    <div class="card"><h3>😣 痛点</h3><ul>
+      <li>笔记分散在多个文件里，复习时找不到</li>
+      <li>自己出题太费时间</li>
+      <li>网上的题和自己课上学的对不上</li>
+      <li>通用 AI 会"自由发挥"，编出课上没讲的内容</li>
+    </ul></div>
+    <div class="card"><h3>🎯 用户与目标</h3><ul>
+      <li>用户：正在期末复习的大学生</li>
+      <li>输入：自己的课程笔记（.md / .txt）</li>
+      <li>输出：带出处的回答 + 可打印的 HTML 复习卷</li>
+      <li>原则：<b>只依据笔记，检索不到就如实说没有</b></li>
+    </ul></div>
+  </div>
+  <aside class="notes">痛点有四个，最关键的是最后一条：通用大模型会编。所以我的设计原则是只依据笔记，查不到就如实说。</aside>
+</section>
+
+<!-- 3. 总体架构 -->
+<section>
+  <h2>总体架构</h2>
+  <div class="arch">
+    <div class="box"><b>用户</b>浏览器</div>
+    <div class="arrow">→</div>
+    <div class="box"><b>Streamlit 界面</b>多轮对话<br>工具调用可视化</div>
+    <div class="arrow">→</div>
+    <div class="box"><b>Agent</b>LangChain create_agent<br>ReAct 循环</div>
+    <div class="arrow">⇄</div>
+    <div class="stack">
+      <div class="box"><b>DeepSeek 模型</b>OpenAI 兼容接口</div>
+      <div class="box"><b>本地工具</b>exam_countdown · save_review_sheet · load_skill</div>
+      <div class="box mcp"><b>MCP 服务（stdio）</b>notes_server.py：search_notes · read_note</div>
+      <div class="box"><b>Skill</b>skills/exam-review/SKILL.md</div>
+    </div>
+  </div>
+  <p class="muted small" style="text-align:center;margin-top:24px">notes/ 笔记 → MCP 检索；复习卷 → output/*.html</p>
+  <aside class="notes">界面是 Streamlit。核心是 LangChain 1.x 的 create_agent，跑的是 ReAct 循环：模型决定调哪个工具，拿到结果再决定下一步。右边四类能力：模型、本地工具、自己写的 MCP 服务、Skill。</aside>
+</section>
+
+<!-- 4. 一次完整调用链 -->
+<section>
+  <h2>一次完整的调用链：出复习卷</h2>
+  <p class="small muted">用户："帮我出一份《树与二叉树》的复习卷并导出"</p>
+  <ol class="flow">
+    <li><code>load_skill("exam-review")</code>：加载出卷流程和固定的卷面结构</li>
+    <li><code>search_notes("二叉树")</code>：通过 MCP 找到相关笔记</li>
+    <li><code>read_note("02_树与二叉树.md")</code>：读取全文，基于全文出题</li>
+    <li><code>save_review_sheet(title, markdown)</code>：Markdown 转 HTML，保存到 output/</li>
+    <li>回复用户：文件路径 + 卷子结构说明，界面提供下载按钮</li>
+  </ol>
+  <aside class="notes">这是最完整的一条链路，四个工具依次调用。顺序不是我写死的，是模型根据系统提示词和 Skill 自己决定的。</aside>
+</section>
+
+<!-- 5. 关键能力①：工具与 MCP -->
+<section>
+  <h2>关键能力 ①：自定义工具 + MCP</h2>
+  <div class="cols">
+    <div class="card"><h3>本地工具（@tool）</h3><ul>
+      <li><b>exam_countdown</b>：用系统时间算天数，并给出复习节奏建议；不让模型心算</li>
+      <li><b>save_review_sheet</b>：Markdown → HTML；过滤 Windows 文件名中的非法字符，加时间戳防止覆盖</li>
+    </ul></div>
+    <div class="card"><h3>MCP 服务（FastMCP）</h3><ul>
+      <li>笔记检索做成<b>独立服务</b>，其他 MCP 客户端也能复用</li>
+      <li>通过 langchain-mcp-adapters 接入，一轮对话共用一个 session</li>
+      <li><b>安全</b>：read_note 会校验路径，拦截 <code>../.env</code></li>
+    </ul></div>
+  </div>
+  <aside class="notes">本地工具两个。MCP 部分我自己写了服务端，不只是调用现成的服务。讲一下安全：如果模型被诱导去读 ../.env，路径校验会直接拒绝。</aside>
+</section>
+
+<!-- 6. 关键能力②：Skill 按需加载 -->
+<section>
+  <h2>关键能力 ②：Skill 按需加载</h2>
+  <div class="cols">
+    <div>
+      <p class="small">系统提示词里<b>只放技能的一行简介</b>：</p>
+      <pre><code>可用技能：
+- exam-review：根据课程笔记生成期末复习卷……</code></pre>
+      <p class="small">模型判断需要时，才调用 <code>load_skill</code> 读取正文：</p>
+      <pre><code>---
+name: exam-review
+description: ……
+---
+# 复习卷生成流程
+第 1 步：确认范围 → 第 2 步：检索笔记 → ……</code></pre>
+    </div>
+    <div class="card"><h3>好处</h3><ul>
+      <li>节省上下文：不出卷时，完整流程不占 token</li>
+      <li>易扩展：新技能 = 新建一个 SKILL.md，代码不用改</li>
+      <li>流程可控：卷面结构、出题规则写在 Skill 里，不靠模型临场发挥</li>
+    </ul></div>
+  </div>
+  <aside class="notes">这是我觉得最有意思的设计：渐进式加载。系统提示词里只有一行简介，真正的流程在需要时才加载进来。</aside>
+</section>
+
+<!-- 7. 关键能力③：界面与可观察性 -->
+<section>
+  <h2>关键能力 ③：多轮对话 + 过程可视化</h2>
+  <ul>
+    <li>Streamlit 用 <code>session_state</code> 保存多轮历史，支持"把刚才那份改成 8 道题"</li>
+    <li>每一步实时展示：💭 思考 → 🔧 调用工具（参数）→ 📄 返回结果</li>
+    <li>历史消息可以展开回看工具调用过程；导出的复习卷可以一键下载</li>
+    <li>出错时显示真实原因（如"未找到 DEEPSEEK_API_KEY"），而不是一大串异常</li>
+  </ul>
+  <aside class="notes">可观察性很重要：评委和用户都能看到 Agent 每一步做了什么，不是黑盒。</aside>
+</section>
+
+<!-- 8. 与课堂 demo 的关系（待补充） -->
+<section>
+  <h2>与课堂 demo_5 的关系</h2>
+  <table class="cmp">
+    <thead><tr><th>方面</th><th>demo_5（Deep Agents 课程助教）</th><th>本项目</th></tr></thead>
+    <tbody>
+      <tr><td>模型接入</td><td>阿里百炼 qwen，OpenAI 兼容接口</td><td><b>沿用</b>：换成 DeepSeek，同样只改 base_url</td></tr>
+      <tr><td>Agent 框架</td><td>create_deep_agent：规划、文件系统、子代理</td><td><b>简化</b>：create_agent 单 Agent，场景单一，够用就好</td></tr>
+      <tr><td>MCP</td><td>course-info 服务，查询课程信息</td><td><b>新写</b>：notes_server 检索自己的笔记，带路径校验</td></tr>
+      <tr><td>Skill</td><td>框架自带：用 read_file 读取 SKILL.md</td><td><b>自己实现</b>：扫描 frontmatter + load_skill 工具</td></tr>
+      <tr><td>自定义工具</td><td>get_current_time、calculator</td><td><b>换成场景工具</b>：考试倒计时、导出 HTML 复习卷</td></tr>
+      <tr><td>异步与界面</td><td>常驻后台事件循环 + 队列</td><td><b>换一种做法</b>：每轮一个事件循环，每轮新建 HTTP 客户端</td></tr>
+      <tr><td>多轮记忆</td><td>SQLite 检查点，可恢复历史会话</td><td><b>简化</b>：session_state 保存，刷新后清空（见不足）</td></tr>
+    </tbody>
+  </table>
+  <aside class="notes">我的项目主要参考 demo_5。模型接入和 MCP 的接入方式是沿用的；Skill 的按需加载，demo_5 是 Deep Agents 框架自带的，我在普通的 create_agent 上用一个 load_skill 工具自己实现了同样的机制。异步这块，demo_5 用常驻后台事件循环，我遇到过第二轮报 Event loop is closed 的问题，最后的做法是每轮新建 HTTP 客户端，让它和事件循环同生共死。</aside>
+</section>
+
+<!-- 9. 思政与合规 -->
+<section>
+  <h2>思政与合规</h2>
+  <div class="cols">
+    <div class="card"><h3>📄 数据来源</h3>
+      <p>示例笔记为 AI 生成、经本人校对，README 中已注明；使用时换成自己的笔记</p></div>
+    <div class="card"><h3>🔒 隐私与安全</h3>
+      <p>API Key 只放在 .env 中，不进代码和 git；检索到的笔记片段会发送给 DeepSeek，所以不要在笔记里放个人隐私</p></div>
+  </div>
+  <div class="cols" style="margin-top:20px">
+    <div class="card"><h3>©️ 版权</h3>
+      <p>只处理用户自己的笔记，不抓取、不传播他人的课件和教材</p></div>
+    <div class="card"><h3>🎓 使用边界</h3>
+      <p>辅助复习，不替代学习；不编造笔记内容；不用于考试作弊</p></div>
+  </div>
+  <aside class="notes">四个方面。特别说明隐私：笔记片段会发到 DeepSeek 的服务器，这一点要如实告诉用户。</aside>
+</section>
+
+<!-- 10. 演示截图（点击图片可放大） -->
+<section>
+  <h2>演示</h2>
+  <div class="cols">
+    <div><p class="cap">出卷：load_skill → read_note → save_review_sheet</p>
+      <img class="shot" src="img/01_chain.png" alt="出复习卷的工具调用过程"></div>
+    <div><p class="cap">导出的复习卷：答案注明出处</p>
+      <img class="shot" src="img/02_sheet.png" alt="导出的 HTML 复习卷"></div>
+    <div><p class="cap">边界：笔记里没有就如实说明</p>
+      <img class="shot" src="img/03_boundary.png" alt="询问红黑树旋转时如实说明笔记未涉及"></div>
+  </div>
+  <aside class="notes">接下来现场演示，顺序：倒计时 → BST 问答 → 出复习卷 → 多轮修改 → 红黑树边界。如果网络不好，就用这三张截图讲，点击图片可以放大。截图 1 里模型没有调用 search_notes，因为前几轮对话里已经出现过文件名，它直接调用了 read_note，这说明工具调用顺序是模型自己决定的。</aside>
+</section>
+
+<!-- 11. 不足与改进 -->
+<section>
+  <h2>不足与改进</h2>
+  <div class="cols">
+    <div class="card"><h3>当前不足</h3><ul>
+      <li>关键词检索，近义词可能搜不到</li>
+      <li>只支持 .md / .txt</li>
+      <li>每轮对话都要重启一次 MCP 子进程（约 1 秒）</li>
+      <li>历史只存在浏览器会话中，刷新后丢失</li>
+    </ul></div>
+    <div class="card"><h3>改进方向</h3><ul>
+      <li>加入向量检索（RAG），支持语义搜索</li>
+      <li>支持 PDF / Word 笔记</li>
+      <li>参考 demo_5，用 SQLite 检查点保存会话历史</li>
+      <li>记录错题，根据错题出下一份卷子</li>
+    </ul></div>
+  </div>
+  <p style="text-align:center;margin-top:30px">谢谢！欢迎提问 🙋</p>
+  <aside class="notes">最后说不足：检索方式最简单，下一步可以加向量检索。谢谢大家。</aside>
+</section>
+
+</div></div>
+<div id="zoom"><img alt="放大的截图"></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({ hash: true, slideNumber: "c/t", width: 1280, height: 720, plugins: [RevealNotes] });
+  // 点击截图放大，再点一下关闭
+  const zoom = document.getElementById("zoom");
+  document.querySelectorAll("img.shot").forEach(img =>
+    img.addEventListener("click", () => { zoom.firstElementChild.src = img.src; zoom.classList.add("on"); }));
+  zoom.addEventListener("click", () => zoom.classList.remove("on"));
+</script>
+</body>
+</html>
