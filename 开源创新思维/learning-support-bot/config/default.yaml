@@ -1,0 +1,37 @@
+# 默认配置
+# 学习支持助手 MVP
+
+# 问题分类规则（可在运营中持续补充）
+classification:
+  confidence_threshold: 0.75   # 低于此置信度转人工
+  categories:
+    course_question:
+      label: "课程疑问"
+      risk: low
+    homework:
+      label: "作业问题"
+      risk: low
+    learning_progress:
+      label: "学习进度"
+      risk: high
+    technical_issue:
+      label: "平台技术问题"
+      risk: low
+    other:
+      label: "其他"
+      risk: low
+
+# 路由规则
+routing:
+  high_risk_categories:
+    - learning_progress
+  auto_reply_categories:
+    - course_question
+    - homework
+
+# 业务指标（基线待采集后填入真实值）
+metrics:
+  response_time_target_minutes: 30   # 目标响应时长
+  ai_resolution_rate_target: 0.6     # AI 自助解决率目标
+  human_review_rate_target: 0.2      # 人工复核率目标
+  csat_target: 4.5                   # 学生满意度目标（5分制）
